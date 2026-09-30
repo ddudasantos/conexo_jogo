@@ -1,0 +1,417 @@
+
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Conexo: Invasão Cultural Norte-Americana</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Segoe+UI:wght@400;700&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
+      background-size: 400% 400%;
+      animation: gradientShift 15s ease infinite;
+      margin: 0;
+      padding: 20px;
+      text-align: center;
+      color: #f1f1f1;
+      min-height: 100vh;
+    }
+
+    @keyframes gradientShift {
+      0% {
+        background-position: 0% 50%;
+      }
+
+      50% {
+        background-position: 100% 50%;
+      }
+
+      100% {
+        background-position: 0% 50%;
+      }
+    }
+
+    h1 {
+      color: #fff;
+      font-size: 1.9em;
+      text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.6);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 10px;
+      max-width: 600px;
+      margin: 30px auto;
+    }
+
+    .word {
+      padding: 12px;
+      background: rgba(255, 255, 255, 0.9);
+      border: 2px solid #aaa;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: 0.3s;
+      font-weight: bold;
+      user-select: none;
+      color: #333;
+    }
+
+    .word:hover {
+      background-color: #e0f4ff;
+    }
+
+    .word.selected {
+      background-color: #d0ebff;
+      border-color: #1e88e5;
+    }
+
+    .word.correct {
+      cursor: default;
+      color: white;
+    }
+
+    .correct.group-1 {
+      background-color: #66bb6a;
+      border-color: #388e3c;
+    }
+
+    .correct.group-2 {
+      background-color: #42a5f5;
+      border-color: #1e88e5;
+    }
+
+    .correct.group-3 {
+      background-color: #ab47bc;
+      border-color: #8e24aa;
+    }
+
+    .correct.group-4 {
+      background-color: #ffa726;
+      border-color: #fb8c00;
+    }
+
+    .word.incorrect {
+      background-color: #ffcdd2;
+      border-color: #e53935;
+    }
+
+    button {
+      padding: 12px 25px;
+      font-size: 16px;
+      background-color: #1e88e5;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      margin-top: 20px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+      transition: 0.3s;
+    }
+
+    button:hover {
+      background-color: #1565c0;
+      transform: translateY(-2px);
+    }
+
+    #musicButton {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      margin: 0;
+      padding: 10px 16px;
+      font-size: 14px;
+      background-color: rgba(255, 255, 255, 0.15);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      backdrop-filter: blur(5px);
+    }
+
+    #resultado {
+      margin-top: 20px;
+      font-weight: bold;
+      color: #ffeb3b;
+      text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.4);
+    }
+
+    .explicacao {
+      margin: 10px auto;
+      max-width: 600px;
+      text-align: left;
+      padding: 10px;
+      background: rgba(255, 255, 255, 0.85);
+      border-left: 6px solid #ffca28;
+      border-radius: 4px;
+      font-size: 0.95em;
+      color: #333;
+    }
+
+    @media (max-width: 600px) {
+      h1 {
+        font-size: 1.6em;
+      }
+
+      button {
+        width: 100%;
+      }
+
+      #musicButton {
+        width: auto;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <h1>Conexo: Invasão Cultural Norte-Americana</h1>
+
+  <p>Encontre os 4 grupos de palavras conectadas entre si!</p>
+
+  <div class="grid" id="grid"></div>
+
+  <button onclick="verificarGrupo()">Verificar Grupo</button>
+
+  <div id="resultado"></div>
+
+  <div id="explicacoes"></div>
+
+  <!-- Música de fundo -->
+  <audio
+    id="bgm"
+    src="audio/ytmp3free.cc_capital-inicial-que-pais-e-esse-ao-vivo-youtubemp3free.org.mp3"
+    loop>
+  </audio>
+
+  <button id="musicButton" onclick="alternarMusica()">🔊 Música</button>
+
+
+  <script>
+    const bgm = document.getElementById("bgm");
+    const musicButton = document.getElementById("musicButton");
+
+    bgm.volume = 0.25;
+
+    function alternarMusica() {
+      if (bgm.paused) {
+        bgm.play()
+          .then(() => {
+            musicButton.textContent = "🔊 Música";
+          })
+          .catch(() => {
+            musicButton.textContent = "❌ Erro ao tocar";
+          });
+      } else {
+        bgm.pause();
+        musicButton.textContent = "🔇 Música";
+      }
+    }
+
+
+    const palavras = [
+      "Imperialismo cultural",
+      "Hegemonia norte-americana",
+      "Colonização simbólica",
+      "Soft power",
+      "Indústria cultural",
+      "Cultura de massa",
+      "Mass media",
+      "Enlatados",
+      "Alienação cultural",
+      "Homogeneização cultural",
+      "Identidade nacional",
+      "Globalização",
+      "American way of life",
+      "Consumismo",
+      "Yankee",
+      "Mercantilização da cultura"
+    ];
+
+
+    const grupos = [
+      {
+        palavras: [
+          "Imperialismo cultural",
+          "Hegemonia norte-americana",
+          "Colonização simbólica",
+          "Soft power"
+        ],
+        classe: "group-1",
+        explicacao: "Formas de dominação cultural"
+      },
+
+      {
+        palavras: [
+          "Indústria cultural",
+          "Cultura de massa",
+          "Mass media",
+          "Enlatados"
+        ],
+        classe: "group-2",
+        explicacao: "Produção e difusão cultural"
+      },
+
+      {
+        palavras: [
+          "Alienação cultural",
+          "Homogeneização cultural",
+          "Identidade nacional",
+          "Globalização"
+        ],
+        classe: "group-3",
+        explicacao: "Consequências sobre a cultura e a sociedade"
+      },
+
+      {
+        palavras: [
+          "American way of life",
+          "Consumismo",
+          "Yankee",
+          "Mercantilização da cultura"
+        ],
+        classe: "group-4",
+        explicacao: "Padrões do modelo norte-americano"
+      }
+    ];
+
+
+    let selecionadas = [];
+    let usados = [];
+
+
+    function embaralhar(array) {
+      return array.sort(() => Math.random() - 0.5);
+    }
+
+
+    function renderizar() {
+      const grid = document.getElementById("grid");
+
+      grid.innerHTML = "";
+
+      embaralhar(palavras).forEach(palavra => {
+        const el = document.createElement("div");
+
+        el.className = "word";
+        el.textContent = palavra;
+        el.dataset.word = palavra;
+
+        el.onclick = () => selecionar(el, palavra);
+
+        grid.appendChild(el);
+      });
+    }
+
+
+    function selecionar(el, palavra) {
+      if (el.classList.contains("correct")) {
+        return;
+      }
+
+      el.classList.toggle("selected");
+
+      if (selecionadas.includes(palavra)) {
+        selecionadas = selecionadas.filter(p => p !== palavra);
+      } else {
+
+        if (selecionadas.length < 4) {
+          selecionadas.push(palavra);
+        } else {
+          alert("Selecione no máximo 4 palavras.");
+          el.classList.remove("selected");
+        }
+      }
+    }
+
+
+    function verificarGrupo() {
+      if (selecionadas.length !== 4) {
+        alert("Selecione 4 palavras.");
+        return;
+      }
+
+      const todasPalavras = document.querySelectorAll(".word");
+      const expDiv = document.getElementById("explicacoes");
+
+      const grupoEncontrado = grupos.find(grupo =>
+        grupo.palavras.every(p => selecionadas.includes(p)) &&
+        !usados.includes(grupo.palavras.toString())
+      );
+
+
+      if (grupoEncontrado) {
+
+        selecionadas.forEach(palavra => {
+
+          todasPalavras.forEach(el => {
+
+            if (el.dataset.word === palavra) {
+              el.classList.remove("selected");
+              el.classList.add("correct", grupoEncontrado.classe);
+              el.onclick = null;
+            }
+
+          });
+
+        });
+
+
+        usados.push(grupoEncontrado.palavras.toString());
+
+        document.getElementById("resultado").textContent = "Grupo correto!";
+
+
+        const explicEl = document.createElement("div");
+
+        explicEl.className = "explicacao";
+
+        explicEl.textContent = grupoEncontrado.explicacao;
+
+        expDiv.appendChild(explicEl);
+
+
+      } else {
+
+        selecionadas.forEach(palavra => {
+
+          todasPalavras.forEach(el => {
+
+            if (el.dataset.word === palavra) {
+
+              el.classList.add("incorrect");
+
+              setTimeout(() => {
+                el.classList.remove("incorrect", "selected");
+              }, 1000);
+
+            }
+
+          });
+
+        });
+
+        document.getElementById("resultado").textContent =
+          "Grupo incorreto. Tente novamente.";
+      }
+
+
+      selecionadas = [];
+
+
+      if (usados.length === 4) {
+        document.getElementById("resultado").textContent =
+          "Parabéns! Você encontrou todos os grupos!";
+      }
+    }
+
+
+    renderizar();
+  </script>
+
+</body>
+</html>
